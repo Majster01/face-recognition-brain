@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Particles from 'react-particles-js';
+import { connect } from 'react-redux';
 import Clarifai from 'clarifai';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Navigation from './components/Navigation/Navigation';
@@ -10,9 +11,15 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Rank from './components/Rank/Rank';
 import './App.css';
 
+import { 
+  onEmailChangeSignIn, 
+  onPasswordChangeSignIn, 
+  onRequestSignIn,
+} from './actions';
+
 //You must add your own API key here from Clarifai.
 const app = new Clarifai.App({
- apiKey: 'YOUR_API_HERE'
+ apiKey: '691d475943344cb9a931da300aebdb4e'
 });
 
 const particlesOptions = {
@@ -24,6 +31,26 @@ const particlesOptions = {
         value_area: 800
       }
     }
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    route: state.routeChange.route,
+    isSignedIn: state.routeChange.isSignedIn,
+    isPending: state.requestUserAndRoute.isPending,
+    user: {
+      id: state.requestUserAndRoute.user.id,
+      name: state.requestUserAndRoute.user.name,
+      email: state.requestUserAndRoute.user.email,
+      entries: state.requestUserAndRoute.user.entries,
+      joined: state.requestUserAndRoute.user.joined,
+    },
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
   }
 }
 
@@ -113,7 +140,8 @@ class App extends Component {
   }
 
   render() {
-    const { isSignedIn, imageUrl, route, box } = this.state;
+    const { isSignedIn, imageUrl, box } = this.state;
+    const { route } = this.props
     return (
       <div className="App">
          <Particles className='particles'
@@ -135,7 +163,7 @@ class App extends Component {
             </div>
           : (
              route === 'signin'
-             ? <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
+             ? <Signin /*loadUser={this.loadUser} onRouteChange={this.onRouteChange}*//>
              : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
             )
         }
@@ -144,4 +172,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
